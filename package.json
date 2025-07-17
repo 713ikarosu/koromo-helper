@@ -6,20 +6,20 @@
     "./packages/*"
   ],
   "scripts": {
-    "native": "cd apps/expo && yarn start",
-    "native:prebuild": "cd apps/expo && yarn prebuild",
-    "ios": "cd apps/expo && yarn ios",
-    "android": "cd apps/expo && yarn android",
+    "native": "cd apps/expo && bun run start",
+    "native:prebuild": "cd apps/expo && bun run prebuild",
+    "ios": "cd apps/expo && bun run ios",
+    "android": "cd apps/expo && bun run android",
     "watch": "ultra -r --no-pretty --concurrency 400 watch",
-    "vercel:install": "yarn set version 3.5 && yarn install",
-    "web": "yarn build && cd apps/next && yarn next",
-    "web:extract": "DISABLE_EXTRACTION=false yarn workspace next-app dev",
-    "web:prod": "yarn workspace next-app build",
-    "web:prod:serve": "yarn workspace next-app serve",
-    "postinstall": "yarn check-tamagui && yarn build",
-    "build": "yarn workspaces foreach --all --exclude next-app run build",
-    "upgrade:tamagui": "yarn up '*tamagui*'@latest '@tamagui/*'@latest",
-    "upgrade:tamagui:canary": "yarn up '*tamagui*'@canary '@tamagui/*'@canary",
+    "vercel:install": "bun set version 3.5 && bun install",
+    "web": "bun run build && cd apps/next && bun run next ",
+    "web:extract": "DISABLE_EXTRACTION=false bun workspace next-app dev",
+    "web:prod": "bun workspace next-app build",
+    "web:prod:serve": "bun workspace next-app serve",
+    "postinstall": "bun run check-tamagui && bun run build",
+    "build": "turbo run build --filter=!next-app",
+    "upgrade:tamagui": "bun up '*tamagui*'@latest '@tamagui/*'@latest",
+    "upgrade:tamagui:canary": "bun up '*tamagui*'@canary '@tamagui/*'@canary",
     "check-tamagui": "tamagui check",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -44,12 +44,13 @@
     "ultra-runner": "^3.10.5",
     "vitest": "^2.1.1"
   },
-  "packageManager": "yarn@4.5.0",
+  
   "engines": {
     "node": "22",
     "npm": "10.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3"
-  }
+  },
+  "packageManager": "bun@1.2.18"
 }
