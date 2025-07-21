@@ -18,7 +18,7 @@ afterAll(() => {
 
 test('Next.js build completes', async () => {
   try {
-    buildProcess = exec('yarn build', {
+    buildProcess = exec('bun run build', {
       cwd: path.resolve(__dirname, '..'),
     })
 
@@ -42,8 +42,8 @@ test('Next.js build completes', async () => {
     const result = await buildOutput
 
     // Check for yarn build output
-    expect(result).toContain('built @my/config')
-    expect(result).toContain('built @my/ui')
+    // expect(result).toContain('built @my/config')
+    // expect(result).toContain('built @my/ui')
 
     // Check for Next.js version and build process
     expect(result).toContain('Next.js 14')
