@@ -1,6 +1,10 @@
 {
   "name": "koromo-helper",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "native": "cd apps/expo && bun run start",
     "native:prebuild": "cd apps/expo && bun run prebuild",
@@ -10,9 +14,9 @@
     "vercel:install": "bun set version 3.5 && bun install",
     "web": "bun run build && cd apps/next && bun run next ",
     "web:extract": "DISABLE_EXTRACTION=false bun workspace next-app dev",
-    "web:prod": "bun workspace next-app build",
-    "web:prod:serve": "bun workspace next-app serve",
-    "postinstall": "bun run check-tamagui && bun run build",
+    "web:prod": "bun --cwd apps/next run build",
+    "web:prod:serve": "bun --cwd apps/next run serve",
+    
     "build": "turbo run build --filter=!next-app",
     "upgrade:tamagui": "bun up '*tamagui*'@latest '@tamagui/*'@latest",
     "upgrade:tamagui:canary": "bun up '*tamagui*'@canary '@tamagui/*'@canary",
@@ -34,6 +38,7 @@
     "check-dependency-version-consistency": "^4.1.0",
     "eslint": "^9.3.0",
     "husky": "^9.1.6",
+    "lucide-react": "^0.525.0",
     "prettier": "^3.3.3",
     "turbo": "^1.13.4",
     "typescript": "~5.8.3",

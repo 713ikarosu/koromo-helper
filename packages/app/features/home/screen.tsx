@@ -1,63 +1,73 @@
 import {
   Anchor,
   Button,
+  ButtonIcon,
   H1,
   Paragraph,
   Separator,
   Sheet,
+  Stack,
   SwitchRouterButton,
   SwitchThemeButton,
   useToastController,
   XStack,
-  YStack
+  YStack,
 } from '@my/ui'
 import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Platform } from 'react-native'
 import { useLink } from 'solito/navigation'
+import { Heart, History, Home, Settings as SettingsIcon, Thermometer, Sparkles } from 'lucide-react'
+
+type Tab = 'home' | 'favorites' | 'history' | 'settings'
 
 export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   const linkTarget = pagesMode ? '/pages-example-user' : '/user'
   const linkProps = useLink({
     href: `${linkTarget}/nate`,
   })
+  const [activeTab, setActiveTab] = useState<Tab>('home')
 
   return (
-    <YStack flex={1} justify="center" items="center" gap="$8" p="$4" bg="$background">      
-      <XStack
-        position="absolute"
-        width="100%"
-        t="$6"
-        gap="$6"
-        justify="center"
-        flexWrap="wrap"
-        $sm={{ position: 'relative', t: 0 }}
-      >
-        {Platform.OS === 'web' && (
-          <>
-            <SwitchRouterButton pagesMode={pagesMode} />
-            <SwitchThemeButton />
-          </>
-        )}
+    <YStack flex={1} justify="center" items="center" gap="$8" p="$4" bg="$background">
+      <Stack flex={1}>
+        {activeTab === 'home' && <>ホーム</>}
+        {activeTab === 'favorites' && <>お気に入り</>}
+        {activeTab === 'history' && <>履歴</>}
+        {activeTab === 'settings' && <>設定</>}
+      </Stack>
+      {/* <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-white/20 shadow-2xl"> */}
+      <XStack width={100} justify="center" alignItems="center">
+        {[
+          { id: 'home', icon: Home, label: 'ホーム' },
+          { id: 'favorites', icon: Heart, label: 'お気に入り' },
+          { id: 'history', icon: History, label: '履歴' },
+          { id: 'settings', icon: SettingsIcon, label: '設定' },
+        ].map((tab) => (
+          <Button
+            key={tab.id}
+            onPress={() => setActiveTab(tab.id as Tab)}
+            width="100%"
+            height="100%"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            padding="$1"
+            transition="all 0.2s ease-in-out"
+            borderRadius="$4"
+            className={`${
+              activeTab === tab.id
+                ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg transform scale-105'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-blue-50'
+            }`}
+          >
+            <tab.icon size={20} />
+            <span>{tab.label}</span>
+          </Button>
+        ))}
       </XStack>
-
-      <YStack gap="$4">
-        <H1 text="center" color="$color12">
-          Welcome to Tamagui.
-        </H1>
-        <Paragraph color="$color10" text="center">
-          Here's a basic starter to show navigating from one screen to another.
-        </Paragraph>
-        <Separator />
-        <Paragraph text="center">
-          This screen uses the same code on Next.js and React Native.
-        </Paragraph>
-        <Separator />
-      </YStack>
-
-      <Button {...linkProps}>Link to user</Button>
-
-      <SheetDemo />
+      {/* </div> */}
+      {/* <SheetDemo /> */}
     </YStack>
   )
 }
