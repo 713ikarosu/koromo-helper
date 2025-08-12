@@ -190,4 +190,4 @@ EXPO_PUBLIC_WEATHER_API_KEY=your_weather_api_key_here
 ---
 
 Expo と React Native を使用して構築されました
-この README はclaude code で生成しました
+この README はclaude code で生成されました

@@ -23,9 +23,11 @@ interface WeatherData {
 }
 
 interface OutfitItem {
-  name: string;
   category: string;
+  name: string;
   color: string;
+  material: string;
+  details: string[];
 }
 
 interface Outfit {
@@ -174,7 +176,6 @@ export default function HomeScreen() {
         userPreferences.selectedStyle,
         outfitHistory
       );
-
       setOutfit(newOutfit);
 
       // 履歴に保存
@@ -298,9 +299,21 @@ export default function HomeScreen() {
             <View style={styles.itemsContainer}>
               <Text style={styles.itemsTitle}>アイテム:</Text>
               {outfit.items.map((item: OutfitItem, index: number) => (
-                <Text key={index} style={styles.item}>
-                  • {item.name} ({item.category}, {item.color})
-                </Text>
+                <View key={index} style={styles.itemCard}>
+                  <Text style={styles.itemCategory}>{item.category}</Text>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemColor}>色: {item.color}</Text>
+                  <Text style={styles.itemMaterial}>素材: {item.material}</Text>
+                  {item.details.length > 0 && (
+                    <View style={styles.itemDetails}>
+                      {item.details.map((detail: string, detailIndex: number) => (
+                        <Text key={detailIndex} style={styles.itemDetail}>
+                          • {detail}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+                </View>
               ))}
             </View>
 
@@ -429,10 +442,44 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#1f2937",
   },
-  item: {
-    fontSize: 14,
-    color: "#6b7280",
+  itemCard: {
+    backgroundColor: "#f9fafb",
+    padding: 12,
+    marginBottom: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  itemCategory: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1f2937",
     marginBottom: 4,
+  },
+  itemName: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 4,
+  },
+  itemColor: {
+    fontSize: 14,
+    color: "#059669",
+    marginBottom: 2,
+  },
+  itemMaterial: {
+    fontSize: 14,
+    color: "#7c3aed",
+    marginBottom: 6,
+  },
+  itemDetails: {
+    marginTop: 4,
+  },
+  itemDetail: {
+    fontSize: 13,
+    color: "#6b7280",
+    marginBottom: 2,
+    marginLeft: 8,
   },
   navigation: {
     flexDirection: "row",

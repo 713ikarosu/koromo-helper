@@ -3,9 +3,18 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ImageService } from "./imageService.js";
 
 export class AIService {
-  static API_KEY = "AIzaSyAv5mYBpMhqdYm35_xTWqp4NTL5EIizGeo";
-  static genAI = new GoogleGenerativeAI(this.API_KEY);
-  static model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  static getAPIKey() {
+    return process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+  }
+
+  static getModel() {
+    const apiKey = this.getAPIKey();
+    if (!apiKey) {
+      throw new Error("Gemini API KEY が設定されていません");
+    }
+    const genAI = new GoogleGenerativeAI(apiKey);
+    return genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  }
 
   static async generateOutfitSuggestion(
     userProfile,
@@ -52,14 +61,30 @@ ${previousItems || "なし"}
 ✅ 良い例: "白の長袖コットンブラウス（胸元にフリル付き）", "グレーの半袖Vネックカットソー（リブ素材）", "ネイビーのストレートテーパードパンツ（ウール混紡）"
 
 【出力形式】
-以下のJSON形式で回答してください。アイテム名は必ず詳細な形状・素材・色・デザインを含めてください：
+以下のJSON形式で回答してください。各アイテムは構造化されたオブジェクトで記述してください：
 {
   "items": [
-    "トップス（袖丈・ネック・色・素材・デザイン詳細を含む）",
-    "ボトムス（シルエット・丈・色・素材・デザイン詳細を含む）", 
-    "シューズ（種類・色・ヒール有無・素材詳細を含む）",
-    "アクセサリー（種類・色・素材・デザイン詳細を含む）",
-    "アウター（必要な場合、袖丈・丈・色・素材・デザイン詳細を含む）"
+    {
+      "category": "トップス",
+      "name": "オックスフォードシャツ",
+      "color": "ライトブルー",
+      "material": "綿100%",
+      "details": ["ボタンダウンカラー", "レギュラーフィット", "胸ポケット付き", "袖丈は肘上5cm"]
+    },
+    {
+      "category": "ボトムス", 
+      "name": "チノパンツ",
+      "color": "ベージュ",
+      "material": "コットン混紡",
+      "details": ["ストレートシルエット", "アンクル丈", "サイドポケット付き"]
+    },
+    {
+      "category": "シューズ",
+      "name": "ローファー",
+      "color": "ブラウン",
+      "material": "本革",
+      "details": ["タッセル付き", "ヒールなし", "クッション性インソール"]
+    }
   ],
   "description": "コーディネートの詳細説明（150文字以内）",
   "stylePoint": "スタイリングのポイント（100文字以内）",
@@ -69,7 +94,8 @@ ${previousItems || "なし"}
 注意：JSONのみを返してください。他の文章は含めないでください。アイテム名は必ず具体的に記述してください。
       `;
 
-      const result = await this.model.generateContent(prompt);
+      const model = this.getModel();
+      const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
 
@@ -129,6 +155,14 @@ ${previousItems || "なし"}
       };
     } catch (error) {
       console.error("AI Service error:", error);
+      
+      // API KEY関連のエラーの場合は詳細ログ
+      if (error.message && error.message.includes('API key')) {
+        const apiKey = this.getAPIKey();
+        console.error("⚠️ Gemini API KEY に問題があります:");
+        console.error("- 現在のKEY:", apiKey ? apiKey.substring(0, 10) + "..." : "未設定");
+        console.error("- 新しいKEYを取得してください: https://makersuite.google.com/app/apikey");
+      }
 
       // フォールバック: エラー時はベーシックな提案を返す
       return this.getFallbackSuggestion(userProfile, weather, style);

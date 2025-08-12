@@ -1,6 +1,6 @@
 // OpenWeatherAPIを使用した天気サービス
 export class WeatherService {
-  static API_KEY = "9a1667cfbfa87288ca87ed39e9141069";
+  static API_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY;
   static API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 
   static async getCurrentWeather() {

@@ -11,7 +11,12 @@
     "lint": "expo lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:gemini": "node tests/gemini-api.test.js",
+    "debug:env": "node tests/debug-env.test.js",
+    "validate:api": "node tests/api-key-validation.test.js",
+    "sdk-debug": "node tests/sdk-debug.test.js",
+    "test:aiservice": "node tests/aiservice-test.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -24,6 +29,7 @@
     "@tamagui/font-inter": "^1.132.16",
     "@tamagui/shorthands": "^1.132.16",
     "@tamagui/themes": "^1.132.16",
+    "dotenv": "^17.2.1",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.7",
     "expo-font": "~13.3.2",
