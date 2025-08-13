@@ -8,16 +8,16 @@ This is an AI fashion coordination app called "Koromo NAVI" built with Expo and 
 
 ## Key Development Commands
 
-- **Start development server**: `npm start` or `npx expo start`
+- **Start development server**: `bun start` or `bunx expo start`
 - **Run on specific platforms**:
-  - Android: `npm run android`
-  - iOS: `npm run ios`
-  - Web: `npm run web`
-- **Linting**: `npm run lint`
-- **Type checking**: `npm run type-check`
-- **Code formatting**: `npm run format`
-- **Check formatting**: `npm run format:check`
-- **Reset project**: `npm run reset-project`
+  - Android: `bun android`
+  - iOS: `bun ios`
+  - Web: `bun web`
+- **Linting**: `bun lint`
+- **Type checking**: `bun type-check`
+- **Code formatting**: `bun format`
+- **Check formatting**: `bun format:check`
+- **Reset project**: `bun reset-project`
 
 ## Architecture and Technology Stack
 
@@ -115,7 +115,7 @@ services/
 
 Run the following commands before committing changes to ensure code quality and consistency:
 
-- `npm run lint` - ESLint for code quality
-- `npm run type-check` - TypeScript type checking
-- `npm run format:check` - Prettier code formatting check
-- `npm run format` - Auto-format code with Prettier
+- `bun lint` - ESLint for code quality
+- `bun type-check` - TypeScript type checking
+- `bun format:check` - Prettier code formatting check
+- `bun format` - Auto-format code with Prettier
