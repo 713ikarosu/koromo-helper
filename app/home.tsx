@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { AIService, UserProfile } from "../services/aiService";
+import { AIService, Outfit } from "../services/aiService";
 import { UserService, UserPreferences } from "../services/storageService";
 import { WeatherService } from "../services/weatherService";
 
@@ -31,18 +31,7 @@ interface OutfitItem {
   details: string[];
 }
 
-interface Outfit {
-  items: OutfitItem[];
-  description: string;
-  stylePoint: string;
-  weatherNote: string;
-  style: string;
-  weather: string;
-  temperature: number;
-  imageUrl: string;
-  source: string;
-  timestamp: string;
-}
+// OutfitインターフェースはservicesファイルからAIServiceのOutfitを使用
 
 // UserPreferencesインターフェースはservices/storageService.tsから継承
 
