@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "koromo-helper",
-    "slug": "koromo-helper",
+    "name": "Koromo NAVI",
+    "slug": "koromo-navi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "koromohelper",
+    "scheme": "koromonavi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

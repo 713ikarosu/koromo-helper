@@ -77,7 +77,7 @@ export default function WelcomeScreen() {
       style={styles.container}
       contentContainerStyle={styles.scrollContainer}
     >
-      <Text style={styles.title}>AI-Coord</Text>
+      <Text style={styles.title}>Koromo NAVI</Text>
       <Text style={styles.subtitle}>AIコーディネート提案アプリ</Text>
 
       <View style={styles.buttonContainer}>

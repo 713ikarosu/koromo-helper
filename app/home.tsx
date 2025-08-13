@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { AIService } from "../services/aiService";
@@ -119,6 +120,59 @@ function WebButton({
   );
 }
 
+interface WebInputProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  keyboardType?: "default" | "numeric" | "email-address";
+  style?: any;
+}
+
+function WebInput({ value, onChangeText, placeholder, keyboardType = "default", style }: WebInputProps) {
+  if (Platform.OS === "web") {
+    return (
+      <input
+        type={keyboardType === "numeric" ? "number" : "text"}
+        value={value}
+        onChange={(e) => onChangeText(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          borderWidth: "1px",
+          borderColor: "#d1d5db",
+          borderRadius: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+          backgroundColor: "white",
+          width: "100%",
+          ...style,
+        }}
+      />
+    );
+  }
+
+  // ネイティブ版
+  return (
+    <TextInput
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      keyboardType={keyboardType}
+      style={[
+        {
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          borderRadius: 8,
+          paddingVertical: 12,
+          paddingHorizontal: 16,
+          fontSize: 16,
+          backgroundColor: "white",
+        },
+        style,
+      ]}
+    />
+  );
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -128,6 +182,12 @@ export default function HomeScreen() {
   const [userPreferences, setUserPreferences] =
     useState<UserPreferences | null>(null);
   const [outfitHistory, setOutfitHistory] = useState<Outfit[]>([]);
+  const [showWeatherInput, setShowWeatherInput] = useState(false);
+  const [manualWeather, setManualWeather] = useState({
+    temperature: "",
+    weather: "",
+    location: "",
+  });
 
   useEffect(() => {
     loadInitialData();
@@ -136,21 +196,46 @@ export default function HomeScreen() {
   const loadInitialData = async () => {
     try {
       // ユーザー設定とデータを並行で読み込み
-      const [preferences, weather, history, profile] = await Promise.all([
+      const [preferences, history, profile] = await Promise.all([
         UserService.getUserPreferences(),
-        WeatherService.getCurrentWeather(),
         UserService.getOutfitHistory(),
         UserService.getUserProfile(),
       ]);
 
       setUserPreferences({ ...preferences, ...profile });
-      setWeatherData(weather);
       setOutfitHistory(history);
+
+      // 天気情報を取得（失敗時はユーザー入力フォームを表示）
+      try {
+        const weather = await WeatherService.getCurrentWeather();
+        setWeatherData(weather);
+      } catch (weatherError) {
+        console.log("Weather service failed, showing manual input form");
+        setShowWeatherInput(true);
+      }
     } catch (error) {
       console.error("Error loading initial data:", error);
     } finally {
       setWeatherLoading(false);
     }
+  };
+
+  const handleManualWeatherSubmit = () => {
+    const temp = parseInt(manualWeather.temperature);
+    if (isNaN(temp) || !manualWeather.weather || !manualWeather.location) {
+      alert("すべての項目を正しく入力してください");
+      return;
+    }
+
+    const weatherData: WeatherData = {
+      temperature: temp,
+      weather: manualWeather.weather,
+      location: manualWeather.location,
+      timestamp: new Date().toISOString(),
+    };
+
+    setWeatherData(weatherData);
+    setShowWeatherInput(false);
   };
 
   const generateOutfit = async () => {
@@ -160,6 +245,7 @@ export default function HomeScreen() {
     }
 
     if (!weatherData) {
+      setShowWeatherInput(true);
       return;
     }
 
@@ -198,11 +284,12 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContainer}
-    >
-      <Text style={styles.title}>AI-Coord ホーム</Text>
+    <View style={styles.container}>
+      
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContainer}
+      >
 
       {/* 天気情報 */}
       <View style={styles.weatherCard}>
@@ -222,6 +309,47 @@ export default function HomeScreen() {
 
         {weatherLoading ? (
           <Text style={styles.loadingText}>天気情報を取得中...</Text>
+        ) : showWeatherInput ? (
+          <View style={styles.weatherInputContainer}>
+            <Text style={styles.weatherInputTitle}>天気情報を入力してください</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>気温 (°C):</Text>
+              <WebInput
+                value={manualWeather.temperature}
+                onChangeText={(text: string) => setManualWeather({...manualWeather, temperature: text})}
+                placeholder="例: 25"
+                keyboardType="numeric"
+                style={styles.weatherInput}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>天気:</Text>
+              <WebInput
+                value={manualWeather.weather}
+                onChangeText={(text: string) => setManualWeather({...manualWeather, weather: text})}
+                placeholder="例: 晴れ"
+                style={styles.weatherInput}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>場所:</Text>
+              <WebInput
+                value={manualWeather.location}
+                onChangeText={(text: string) => setManualWeather({...manualWeather, location: text})}
+                placeholder="例: 東京"
+                style={styles.weatherInput}
+              />
+            </View>
+
+            <WebButton
+              title="天気情報を設定"
+              onPress={handleManualWeatherSubmit}
+              style={styles.weatherSubmitButton}
+            />
+          </View>
         ) : weatherData ? (
           <>
             <Text style={styles.temperature}>{weatherData.temperature}°C</Text>
@@ -351,7 +479,8 @@ export default function HomeScreen() {
           style={{ backgroundColor: "#ef4444" }}
         />
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -360,16 +489,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f3f4f6",
   },
+  scrollView: {
+    flex: 1,
+  },
   scrollContainer: {
     padding: 20,
     minHeight: "100%",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-    color: "#1f2937",
   },
   weatherCard: {
     backgroundColor: "white",
@@ -584,5 +709,35 @@ const styles = StyleSheet.create({
   historyNote: {
     fontSize: 12,
     color: "#6b7280",
+  },
+  weatherInputContainer: {
+    backgroundColor: "#fff3cd",
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#fbbf24",
+  },
+  weatherInputTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#92400e",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  inputGroup: {
+    marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 4,
+  },
+  weatherInput: {
+    marginBottom: 8,
+  },
+  weatherSubmitButton: {
+    backgroundColor: "#059669",
+    marginTop: 8,
   },
 });

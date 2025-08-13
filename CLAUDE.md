@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an AI fashion coordination app called "koromo-helper" built with Expo and React Native. The app suggests outfit coordination based on user preferences and weather information. The project is implemented in Japanese and targets users who want daily fashion recommendations.
+This is an AI fashion coordination app called "Koromo NAVI" built with Expo and React Native. The app suggests outfit coordination based on user preferences and weather information. The project is implemented in Japanese and targets users who want daily fashion recommendations.
 
 ## Key Development Commands
 

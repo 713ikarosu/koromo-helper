@@ -4,7 +4,7 @@
 
 ### 1.1. アプリ名（案）
 
-- AI-Coord（アイコーデ）
+- Koromo NAVI（コロモナビ）
 - StyleAI（スタイルAI）
 - Weatharo（ウェザロ）
 

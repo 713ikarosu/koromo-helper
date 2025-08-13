@@ -58,7 +58,7 @@ test.describe("Koromo Helper E2E Tests", () => {
     await page.waitForLoadState("networkidle");
 
     // Check if main elements are present
-    const title = page.locator("text=AI-Coord");
+    const title = page.locator("text=Koromo NAVI");
     await expect(title).toBeVisible();
 
     // Look for login form or main content
