@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, "../.env.local") });
 
-import { AIService } from "../services/aiService.js";
+import { AIService } from "../services/aiService";
 
 // テスト用のモックデータ
 const testUserProfile = {

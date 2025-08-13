@@ -9,8 +9,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { AIService } from "../services/aiService";
-import { UserService } from "../services/storageService";
+import { AIService, UserProfile } from "../services/aiService";
+import { UserService, UserPreferences } from "../services/storageService";
 import { WeatherService } from "../services/weatherService";
 
 interface WeatherData {
@@ -44,12 +44,7 @@ interface Outfit {
   timestamp: string;
 }
 
-interface UserPreferences {
-  selectedStyle: string;
-  gender: string;
-  age: number;
-  [key: string]: any;
-}
+// UserPreferencesインターフェースはservices/storageService.tsから継承
 
 // Web用の純粋なHTMLボタンコンポーネント
 interface WebButtonProps {
@@ -202,7 +197,11 @@ export default function HomeScreen() {
         UserService.getUserProfile(),
       ]);
 
-      setUserPreferences({ ...preferences, ...profile });
+      setUserPreferences({ 
+        selectedStyle: preferences?.selectedStyle || "",
+        ...preferences, 
+        ...profile 
+      } as UserPreferences);
       setOutfitHistory(history);
 
       // 天気情報を取得（失敗時はユーザー入力フォームを表示）
@@ -255,7 +254,7 @@ export default function HomeScreen() {
       // AIサービスを使用してコーディネート提案を生成
       const newOutfit = await AIService.generateOutfitSuggestion(
         {
-          gender: userPreferences.gender || "other",
+          gender: (userPreferences.gender as "male" | "female" | "other") || "other",
           age: userPreferences.age || 25,
         },
         weatherData,
