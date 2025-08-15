@@ -390,6 +390,11 @@ export default function HomeScreen() {
                   source={{ uri: outfit.imageUrl }}
                   style={styles.outfitImage}
                   resizeMode="cover"
+                  onError={(e) => {
+                    console.log('Image loading failed:', outfit.imageUrl);
+                    console.log('Error details:', e);
+                  }}
+                  onLoad={() => console.log('Image loaded successfully:', outfit.imageUrl)}
                 />
               </View>
             )}

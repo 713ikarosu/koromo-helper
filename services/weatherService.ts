@@ -86,34 +86,10 @@ export class WeatherService {
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.log("天気情報取得失敗、デフォルト値を使用:", errorMessage);
-
-      // フォールバック: デフォルトの天気情報（東京の座標でAPI呼び出しを試行）
-      try {
-        const response = await fetch(
-          `${this.API_BASE_URL}?lat=35.6895&lon=139.692&appid=${this.API_KEY}&units=metric&lang=ja`
-        );
-
-        if (response.ok) {
-          const data: OpenWeatherResponse = await response.json();
-          return {
-            ...this.parseWeatherData(data),
-            location: "東京",
-            isDefault: true,
-          };
-        }
-      } catch (apiError) {
-        console.error("API fallback also failed:", apiError);
-      }
-
-      // 最終的なフォールバック: 固定値
-      return {
-        temperature: 20,
-        weather: "晴れ",
-        location: "東京",
-        timestamp: new Date().toISOString(),
-        isDefault: true,
-      };
+      console.log("天気情報取得失敗、ユーザー入力が必要:", errorMessage);
+      
+      // エラーを投げてホーム画面でユーザー入力フォームを表示させる
+      throw new Error("位置情報が取得できませんでした。手動で天気情報を入力してください。");
     }
   }
 

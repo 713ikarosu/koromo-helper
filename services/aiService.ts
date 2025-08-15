@@ -175,13 +175,25 @@ ${previousItems || "なし"}
         .map((outfit) => outfit.imageUrl)
         .filter(Boolean);
 
-      // 適切な画像を選択
+      // AIが生成したアイテム情報を基により適切な画像を選択
+      console.log("Getting AI outfit image with:", { style, gender: userProfile.gender, temperature });
+      
+      // AIが提案したアイテムの特徴を抽出
+      const itemFeatures = aiSuggestion.items.map(item => ({
+        category: item.category,
+        name: item.name,
+        color: item.color
+      }));
+      console.log("AI suggested items features:", itemFeatures);
+      
       const imageUrl = ImageService.getOutfitImage(
         style,
         userProfile.gender,
         temperature,
-        previousImageUrls
+        previousImageUrls,
+        itemFeatures
       );
+      console.log("Generated AI image URL:", imageUrl);
 
       // 結果の整形
       return {
@@ -422,11 +434,33 @@ ${previousItems || "なし"}
     }
 
     // フォールバック用の画像も選択
+    console.log("Getting fallback outfit image with:", { style, gender: userProfile.gender, temperature });
     const imageUrl = ImageService.getOutfitImage(
       style,
       userProfile.gender,
       temperature
     );
+    console.log("Generated fallback image URL:", imageUrl);
+    
+    // 選択された画像に基づいてより汎用的な説明を生成
+    const styleDescriptions: Record<string, string> = {
+      casual: "リラックスした日常的なスタイル",
+      smart: "洗練されたきれいめスタイル", 
+      street: "トレンド感のあるストリートスタイル",
+      mode: "ファッション性の高いモードスタイル",
+      minimal: "シンプルで無駄のないミニマルスタイル",
+      vintage: "レトロでクラシックなヴィンテージスタイル"
+    };
+    
+    const tempDescriptions: Record<string, string> = {
+      cold: "寒い季節に適した暖かみのある",
+      mild: "過ごしやすい気温に適したバランスの良い", 
+      warm: "暖かい季節に適した涼しげな"
+    };
+    
+    const tempCategory = temperature < 15 ? "cold" : temperature > 25 ? "warm" : "mild";
+    
+    description = `${tempDescriptions[tempCategory]}${styleDescriptions[style] || styleDescriptions.casual}のコーディネートです。${temperature}°C、${weatherCondition}の日におすすめのスタイリングです。`;
 
     return {
       items,

@@ -1,15 +1,23 @@
 // API KEYの詳細検証テスト
-const dotenv = require("dotenv");
-const path = require("path");
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 // 環境変数を読み込み
-dotenv.config({ path: path.join(__dirname, "../.env.local") });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, "../.env.local") });
 
-async function validateApiKey() {
+async function validateApiKey(): Promise<void> {
   const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
   
   console.log("🔍 API KEY 詳細検証");
   console.log("================================");
+  
+  if (!apiKey) {
+    console.log("❌ API KEY が設定されていません");
+    return;
+  }
   
   // 基本情報
   console.log("🔑 API KEY 情報:");
@@ -70,7 +78,7 @@ async function validateApiKey() {
     }
     
   } catch (error) {
-    console.error("❌ ネットワークエラー:", error.message);
+    console.error("❌ ネットワークエラー:", (error as Error).message);
   }
   
   console.log("\n🌐 Google AI Studio リンク:");

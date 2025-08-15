@@ -1,13 +1,15 @@
 // Google GenerativeAI SDK デバッグテスト
-const dotenv = require("dotenv");
-const path = require("path");
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // 環境変数を読み込み
-dotenv.config({ path: path.join(__dirname, "../.env.local") });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, "../.env.local") });
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-async function debugSDK() {
+async function debugSDK(): Promise<void> {
   const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
   
   console.log("🔧 Google GenerativeAI SDK デバッグ");
@@ -16,6 +18,11 @@ async function debugSDK() {
   console.log("🔑 API KEY状況:");
   console.log(`- 値: ${apiKey ? apiKey.substring(0, 10) + "..." : "未設定"}`);
   console.log(`- 長さ: ${apiKey ? apiKey.length : 0}`);
+  
+  if (!apiKey) {
+    console.log("❌ API KEY が設定されていません");
+    return;
+  }
   
   try {
     // 1. SDK初期化テスト
@@ -92,18 +99,19 @@ async function debugSDK() {
       console.log("📦 解析結果:", JSON.stringify(parsed, null, 2));
       
     } catch (parseError) {
-      console.log("⚠️ JSON解析失敗:", parseError.message);
+      console.log("⚠️ JSON解析失敗:", (parseError as Error).message);
       console.log("Raw text:", complexText);
     }
     
   } catch (error) {
     console.error("❌ SDK テストエラー:", error);
+    const err = error as any;
     console.error("エラー詳細:", {
-      name: error.name,
-      message: error.message,
-      status: error.status,
-      statusText: error.statusText,
-      errorDetails: error.errorDetails
+      name: err.name,
+      message: err.message,
+      status: err.status,
+      statusText: err.statusText,
+      errorDetails: err.errorDetails
     });
   }
 }

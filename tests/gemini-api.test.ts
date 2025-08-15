@@ -12,7 +12,7 @@ import { AIService } from "../services/aiService";
 
 // テスト用のモックデータ
 const testUserProfile = {
-  gender: "female",
+  gender: "female" as const,
   age: 25,
 };
 
@@ -22,10 +22,10 @@ const testWeather = {
   location: "東京",
 };
 
-const testStyle = "casual";
+const testStyle = "casual" as const;
 
 // API KEY の存在確認
-function checkAPIKey() {
+function checkAPIKey(): boolean {
   console.log("🔍 API KEY チェック中...");
   
   // Node.js環境では直接 process.env をチェック
@@ -39,7 +39,7 @@ function checkAPIKey() {
   if (!apiKey) {
     console.error("❌ Gemini API KEY が設定されていません！");
     console.log("環境変数 EXPO_PUBLIC_GEMINI_API_KEY を確認してください");
-    console.log("現在のAIService.API_KEY:", AIService.API_KEY);
+    console.log("現在のAIService:", AIService);
     return false;
   }
   
@@ -49,11 +49,19 @@ function checkAPIKey() {
 }
 
 // シンプルなGemini API接続テスト
-async function testBasicConnection() {
+async function testBasicConnection(): Promise<boolean> {
   console.log("\n📡 基本的な API 接続テスト中...");
   
+  const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("❌ API KEY が設定されていません");
+    return false;
+  }
+  
   try {
-    const model = AIService.model;
+    const { GoogleGenerativeAI } = await import("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     // シンプルなプロンプトでテスト
     const result = await model.generateContent("こんにちは、今日の天気はどうですか？");
@@ -63,14 +71,14 @@ async function testBasicConnection() {
     console.log("✅ API 接続成功！");
     console.log("📝 応答例:", text.substring(0, 100) + "...");
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ API 接続失敗:", error.message);
     return false;
   }
 }
 
 // コーディネート提案のフルテスト
-async function testOutfitSuggestion() {
+async function testOutfitSuggestion(): Promise<boolean> {
   console.log("\n👔 コーディネート提案テスト中...");
   
   try {
@@ -103,7 +111,7 @@ async function testOutfitSuggestion() {
     }
     
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ コーディネート提案失敗:", error.message);
     console.error("エラー詳細:", error);
     return false;
@@ -111,7 +119,7 @@ async function testOutfitSuggestion() {
 }
 
 // フォールバック機能のテスト
-async function testFallback() {
+async function testFallback(): Promise<boolean> {
   console.log("\n🔄 フォールバック機能テスト中...");
   
   try {
@@ -128,14 +136,14 @@ async function testFallback() {
     console.log("  - ソース:", fallbackSuggestion.source);
     
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ フォールバック機能失敗:", error.message);
     return false;
   }
 }
 
 // メインテスト実行
-async function runAllTests() {
+async function runAllTests(): Promise<void> {
   console.log("🧪 Gemini API テスト開始\n");
   console.log("=".repeat(50));
   
